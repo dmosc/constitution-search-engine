@@ -1,0 +1,52 @@
+@import "@material-design-icons/font/outlined.css";
+
+:root {
+  /* Color palette */
+  --primary-color: #ff00bf;
+  --default-border-color: #8b949e;
+  /* Spacing */
+  --default-margin: 5px;
+  --default-padding: 5px;
+  /* Misc */
+  --default-border-radius: 2px;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
+    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  -ms-overflow-style: none;
+}
+
+/* Hide scrollbar IE and Edge */
+*::-webkit-scrollbar {
+  display: none;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+*:focus {
+  outline-color: var(--primary-color);
+}
+
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    color: white;
+    background: #0d1117;
+  }
+}
+
+.material-icons-outlined:hover {
+  cursor: pointer;
+  color: var(--default-border-color);
+}

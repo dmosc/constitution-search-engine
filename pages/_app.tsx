@@ -1,8 +1,39 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
+import Loader from "components/loader";
+import Navbar from "components/navbar";
+import type { Session } from "next-auth";
+import { SessionProvider, useSession } from "next-auth/react";
+import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
+import React from "react";
+import { ChildrenProps } from "types/next-auth";
+import "./globals.css";
 
-function MyApp({ Component, pageProps }: AppProps) {
-  return <Component {...pageProps} />
-}
+const AuthWrapper: React.FC<ChildrenProps> = ({ children }) => {
+  const router = useRouter();
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      router.push("/api/auth/signin");
+    }
+  });
+  if (status === "loading") return <Loader />;
+  return children;
+};
 
-export default MyApp
+const App = ({
+  Component,
+  pageProps: { session, ...pageProps }
+}: AppProps<{ session: Session }>) => {
+  return (
+    <SessionProvider session={session}>
+      <AuthWrapper>
+        <>
+          <Navbar />
+          <Component {...pageProps} />
+        </>
+      </AuthWrapper>
+    </SessionProvider>
+  );
+};
+
+export default App;
