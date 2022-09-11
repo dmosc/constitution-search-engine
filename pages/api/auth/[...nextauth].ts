@@ -9,7 +9,6 @@ export default NextAuth({
     })
   ],
   theme: {
-    // TODO: Maybe support system color scheme.
     colorScheme: "dark"
   },
   callbacks: {
