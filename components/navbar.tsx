@@ -17,13 +17,13 @@ const Navbar: React.FC = () => {
       <div className={styles.searchContainer}>
         <input
           className={styles.searchInput}
-          placeholder="Search for any/file/path"
+          placeholder="Busca cualquier palabra o ley de la constitución mexicana"
         />
       </div>
       <div className={styles.avatarContainer}>
         <div className={styles.nameContainer}>
-          <div style={{ fontSize: 12 }}>Hello, </div>
-          <div className={styles.name}>{user?.name}</div>
+          <div style={{ fontSize: 12 }}>Hola, </div>
+          <div className={styles.name}>{user?.email?.split("@")[0]}</div>
         </div>
         <Image
           src={user?.image! ?? "/favicon.ico"} // TODO: Get a nicer placeholder.

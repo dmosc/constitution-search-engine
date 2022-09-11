@@ -41,3 +41,63 @@
   font-weight: bold;
   margin-bottom: var(--default-margin);
 }
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100vw;
+  height: 70vh;
+  overflow: scroll;
+}
+
+.gridTitle {
+  width: 100%;
+  text-align: start;
+  padding: 0 1em;
+}
+
+.grid > div {
+  margin: var(--default-margin);
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: left;
+  width: 25em;
+  padding: calc(var(--default-padding) * 2);
+  border: 1px solid var(--default-border-color);
+  border-radius: var(--default-border-radius);
+}
+
+.card:hover {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+
+.cardTitle {
+  width: 100%;
+  font-size: large;
+  font-weight: bold;
+  margin-bottom: var(--default-margin);
+}
+
+.tagsContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: var(--default-margin);
+}
+
+.tag {
+  width: fit-content;
+  border: none;
+  border-radius: var(--default-border-radius);
+  background-color: var(--secondary-color);
+  padding: var(--default-padding);
+  margin-right: var(--default-margin);
+  font-size: 10px;
+  font-weight: bold;
+}
