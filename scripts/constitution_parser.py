@@ -4,7 +4,7 @@ import logging
 import re
 
 import slate  # pylint: disable=import-error
-
+import json
 
 logging.basicConfig(level=logging.INFO)
 
@@ -77,6 +77,7 @@ if __name__ == "__main__":
             final_text += page
         articles = identify_articles(final_text)
 
-        for article in articles:
-            dictionary = article.to_dict()
-            # Store it in the DB?
+        articles_dictionary = [article.to_dict() for article in articles]
+        articles_json = json.dumps(articles_dictionary)
+        with open("cpeum.json", "w") as json_file:
+            json_file.write(articles_json)
