@@ -1,4 +1,4 @@
-import { StarFilled, StarOutlined } from "@ant-design/icons";
+import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
 import { Button, Card } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
@@ -17,6 +17,7 @@ const Home: NextPage = () => {
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [matchedWords, setMatchedWords] = useState<string[]>();
   const [starredArticles, setStarredArticles] = useState<Set<Types.ObjectId>>();
+  const [isSaving, setIsSaving] = useState<Types.ObjectId>();
 
   useEffect(() => {
     if (timeoutId) clearTimeout(timeoutId);
@@ -62,48 +63,59 @@ const Home: NextPage = () => {
 
   return (
     <div className={styles.container}>
-      {articles.map((article) => (
-        <Card
-          title={article.name}
-          key={String(article.codeName)}
-          // TODO: Replace scroll overflow for a modal.
-          style={{ maxHeight: "25vh", overflow: "auto" }}
-          extra={
-            <Button
-              type="dashed"
-              icon={
-                starredArticles?.has(article._id) ? (
-                  <StarFilled />
-                ) : (
-                  <StarOutlined />
-                )
-              }
-              onClick={() => {
-                const starredArticlesToSet = new Set(starredArticles);
-                if (starredArticlesToSet?.has(article._id)) {
-                  starredArticlesToSet.delete(article._id);
-                } else {
-                  starredArticlesToSet?.add(article._id);
-                }
-                fetch("/api/user.update", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    starredArticles: [...starredArticlesToSet!]
-                  })
-                })
-                  .then((res) => res.json())
-                  .then((res: UserType) => {
-                    setStarredArticles(
-                      new Set(res.starredArticles.map(({ _id }) => _id))
-                    );
-                  });
-              }}
-            />
+      {articles.map((article) => {
+        let iconToRender;
+        if (isSaving === article._id) {
+          iconToRender = <LoadingOutlined />;
+        } else {
+          if (starredArticles?.has(article._id)) {
+            iconToRender = <StarFilled />;
+          } else {
+            iconToRender = <StarOutlined />;
           }
-        >
-          <div id={String(article.codeName)}>{article.content}</div>
-        </Card>
-      ))}
+        }
+        return (
+          <Card
+            title={article.name}
+            key={String(article.codeName)}
+            // TODO: Replace scroll overflow for a modal.
+            style={{ maxHeight: "25vh", overflow: "auto" }}
+            extra={
+              <Button
+                type="dashed"
+                disabled={!!isSaving}
+                icon={iconToRender}
+                onClick={() => {
+                  setIsSaving(article._id);
+                  const starredArticlesToSet = new Set(starredArticles);
+                  if (starredArticlesToSet?.has(article._id)) {
+                    starredArticlesToSet.delete(article._id);
+                  } else {
+                    starredArticlesToSet?.add(article._id);
+                  }
+                  fetch("/api/user.update", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      starredArticles: [...starredArticlesToSet!]
+                    })
+                  })
+                    .then((res) => res.json())
+                    .then((res: UserType) => {
+                      setStarredArticles(
+                        new Set(res.starredArticles.map(({ _id }) => _id))
+                      );
+                    })
+                    .finally(() => {
+                      setIsSaving(undefined);
+                    });
+                }}
+              />
+            }
+          >
+            <div id={String(article.codeName)}>{article.content}</div>
+          </Card>
+        );
+      })}
     </div>
   );
 };
