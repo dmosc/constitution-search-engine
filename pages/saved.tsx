@@ -19,7 +19,11 @@ const Saved: NextPage = () => {
   useEffect(() => {
     if (timeoutId) clearTimeout(timeoutId);
     timeoutId = window.setTimeout(() => {
-      fetch(router.query.q ? `/api/query?q=${router.query.q}` : "/api/query")
+      fetch(
+        router.query.q
+          ? `/api/query?q=${router.query.q}&starred=true`
+          : "/api/query?starred=true"
+      )
         .then((res) => res.json())
         .then((res) => {
           setArticles(res.articles);

@@ -1,12 +1,18 @@
-import { Article } from "models";
+import { Article, User } from "models";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { getSession } from "next-auth/react";
 import LanguageService from "services/language-service";
+
+type ReqQueryType = {
+  q: string;
+  starred: boolean;
+};
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const { q = "" } = req.query;
+  const { q = "", starred } = req.query as unknown as ReqQueryType;
   const languageService = LanguageService.getInstance();
   const keywords = await languageService.getKeywords(q as string);
   const synonyms = [];
@@ -21,6 +27,11 @@ export default async function handler(
   ];
   if (matchedWords.length) {
     filters.keywords = { $elemMatch: { $in: matchedWords } };
+  }
+  if (!!starred) {
+    const session = await getSession({ req });
+    const user = await User.findOne({ email: session?.user.email });
+    filters._id = { $in: user?.starredArticles };
   }
   const articles = await Article.find(filters).limit(20);
   res.status(200).json({ articles, matchedWords });
