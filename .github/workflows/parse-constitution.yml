@@ -1,0 +1,37 @@
+name: Process constitution
+
+on:
+  push:
+    branches: [main]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      GH_CLIENT_PRIVATE_KEY: ${{ secrets.GH_CLIENT_PRIVATE_KEY }}
+      MONGO_URI: ${{ secrets.MONGO_URI }}
+      GOOGLE_APPLICATION_CREDENTIALS_PROJECT_ID: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_PROJECT_ID }}
+      GOOGLE_APPLICATION_CREDENTIALS_CLIENT_EMAIL: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_CLIENT_EMAIL }}
+      GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS_PRIVATE_KEY }}
+
+    strategy:
+      matrix:
+        node-version: [14.x]
+
+    steps:
+      - name: Checking out the codebase
+        uses: actions/checkout@v2
+
+      - name: Setting node@${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Installing dependencies
+        run: yarn
+
+      - name: Processing constitution
+        run: yarn scripts:process-constitution
