@@ -26,7 +26,7 @@ type BlobContentType =
   const promises = [];
   if (Array.isArray(data)) {
     const languageService = LanguageService.getInstance();
-    let doc_freq = new Map();
+    let docFreq = new Map();
 
     for (const file of data) {
       if (file.name.search(/\d+/) !== -1) {
@@ -35,18 +35,17 @@ type BlobContentType =
         );
         const content = Buffer.from(data.content, "base64").toString("utf-8");
         const [name, ...rest] = content.split("\n");
-        const article_name = name.match(/[A-zÁ-ú0-9 ]+/g)?.pop();
         rest.shift();
-        const article_content = rest.join("\n");
-        const keywords = await languageService.getKeywords(article_content);
-        const lemma_keywords = keywords!.map((k) => k.lemma) as string[];
+        const articleContent = rest.join("\n");
+        const keywords = await languageService.getKeywords(articleContent);
+        const lemmaKeywords = keywords!.map((k) => k.lemma) as string[];
         // array of unique keywords to add at most one per document
-        const unique_keywords = new Set(lemma_keywords);
-        unique_keywords.forEach((word) => {
-          if (doc_freq.has(word)) {
-            doc_freq.set(word, doc_freq.get(word) + 1);
+        const uniqueKeywords = new Set(lemmaKeywords);
+        uniqueKeywords.forEach((word) => {
+          if (docFreq.has(word)) {
+            docFreq.set(word, docFreq.get(word) + 1);
           }
-          doc_freq.set(word, 1);
+          docFreq.set(word, 1);
         });
       }
     }
@@ -70,8 +69,8 @@ type BlobContentType =
         rest.shift();
         article.content = rest.join("\n");
         const keywords = await languageService.getKeywords(article.content!);
-        const lemma_keywords = keywords!.map((k) => k.lemma) as string[];
-        article.keywords = lemma_keywords;
+        const lemmaKeywords = keywords!.map((k) => k.lemma) as string[];
+        article.keywords = lemmaKeywords;
         // lemma_keywords = [a,b,b,poli,poli,poli,poli,poli,poli,poli,poli]
         // map keywords {a: 1, b: 2, rod: 0, poli: 8}
         // map term frequency in doc(tf) {a: 1/11, b: 2/11, rod: 0/11, poli: 8/11}
@@ -79,18 +78,18 @@ type BlobContentType =
         //    {a: 10/3, b: 10/2, rod: 10/7, poli: 10/9} a appears in 3 out of 10 documents
         // tf[a] * (ln(idf[a]))
         // tfidf = {a: 1.2, b: 3.2, rod: 0, poli: .8}
-        let term_freq = new Map();
-        for (const word of lemma_keywords) {
-          if (term_freq.has(word)) {
-            term_freq.set(word, doc_freq.get(word) + 1 / lemma_keywords.length);
+        let termFreq = new Map();
+        for (const word of lemmaKeywords) {
+          if (termFreq.has(word)) {
+            termFreq.set(word, docFreq.get(word) + 1 / lemmaKeywords.length);
           }
-          term_freq.set(word, 1 / lemma_keywords.length);
+          termFreq.set(word, 1 / lemmaKeywords.length);
         }
         let tfidf = new Map();
-        term_freq.forEach((value: number, key: string) => {
+        termFreq.forEach((value: number, key: string) => {
           tfidf.set(
             key,
-            Math.log(data.content.split(" ").length / doc_freq.get(key)) *
+            Math.log(data.content.split(" ").length / docFreq.get(key)) *
               (value as number)
           );
         });
