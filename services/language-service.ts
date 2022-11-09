@@ -51,7 +51,7 @@ class LanguageService {
       )
       .map(({ text, partOfSpeech, lemma }) => ({
         text: text?.content,
-        lemma,
+        lemma: lemma!.replace(/\W/g, ""),
         type: partOfSpeech?.tag
       }));
   }
