@@ -1,4 +1,4 @@
-import { StarFilled, StarOutlined } from "@ant-design/icons";
+import { StarFilled, StarOutlined, ArrowsAltOutlined } from "@ant-design/icons";
 import { Button, Card } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
@@ -58,7 +58,7 @@ const Saved: NextPage = () => {
     fetch("/api/user.get")
       .then((res) => res.json())
       .then((res: UserType) => {
-        setStarredArticles(new Set(res.starredArticles.map(({ _id }) => _id)));
+        setStarredArticles(new Set(res.starredArticles.map(({_id}) => _id)));
       });
   }, []);
 
@@ -69,38 +69,46 @@ const Saved: NextPage = () => {
           title={article.name}
           key={String(article.codeName)}
           // TODO: Replace scroll overflow for a modal.
-          style={{ maxHeight: "25vh", overflow: "auto" }}
+          style={{maxHeight: "25vh", overflow: "auto"}}
           extra={
-            <Button
-              type="dashed"
-              icon={
-                starredArticles?.has(article._id) ? (
-                  <StarFilled />
-                ) : (
-                  <StarOutlined />
-                )
-              }
-              onClick={() => {
-                const starredArticlesToSet = new Set(starredArticles);
-                if (starredArticlesToSet?.has(article._id)) {
-                  starredArticlesToSet.delete(article._id);
-                } else {
-                  starredArticlesToSet?.add(article._id);
+            <>
+              <Button
+                icon={<ArrowsAltOutlined/>}
+                onClick={() => {
+                  router.push(`/articles/${article._id}`);
+                }}
+              />
+              <Button
+                type="dashed"
+                icon={
+                  starredArticles?.has(article._id) ? (
+                    <StarFilled/>
+                  ) : (
+                    <StarOutlined/>
+                  )
                 }
-                fetch("/api/user.update", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    starredArticles: [...starredArticlesToSet!]
+                onClick={() => {
+                  const starredArticlesToSet = new Set(starredArticles);
+                  if (starredArticlesToSet?.has(article._id)) {
+                    starredArticlesToSet.delete(article._id);
+                  } else {
+                    starredArticlesToSet?.add(article._id);
+                  }
+                  fetch("/api/user.update", {
+                    method: "POST",
+                    body: JSON.stringify({
+                      starredArticles: [...starredArticlesToSet!]
+                    })
                   })
-                })
-                  .then((res) => res.json())
-                  .then((res: UserType) => {
-                    setStarredArticles(
-                      new Set(res.starredArticles.map(({ _id }) => _id))
-                    );
-                  });
-              }}
-            />
+                    .then((res) => res.json())
+                    .then((res: UserType) => {
+                      setStarredArticles(
+                        new Set(res.starredArticles.map(({_id}) => _id))
+                      );
+                    });
+                }}
+              />
+            </>
           }
         >
           <div id={String(article.codeName)}>{article.content}</div>
