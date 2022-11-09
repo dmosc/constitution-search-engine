@@ -1,5 +1,13 @@
 import { DownOutlined } from "@ant-design/icons";
-import { Avatar, Button, Dropdown, Input, Menu, Typography } from "antd";
+import {
+  AutoComplete,
+  Avatar,
+  Button,
+  Dropdown,
+  Input,
+  Menu,
+  Typography
+} from "antd";
 import { User } from "next-auth";
 import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -13,6 +21,16 @@ const Navbar: React.FC = () => {
   const [user, setUser] = useState<User>();
   const { data: session } = useSession();
   const [query, setQuery] = useState<string>();
+  const [previousQueries, setPreviousQueries] = useState<String[]>([]);
+
+  useEffect(() => {
+    const locallySavedQueries = localStorage.getItem("previousQueriesArray");
+    if (locallySavedQueries) {
+      setPreviousQueries(JSON.parse(locallySavedQueries));
+    } else {
+      localStorage.setItem("previousQueriesArray", JSON.stringify([]));
+    }
+  }, []);
 
   useEffect(() => {
     if (session) {
@@ -24,6 +42,15 @@ const Navbar: React.FC = () => {
     const queryToSet = { ...router.query };
     if (query) {
       queryToSet.q = query;
+      const locallySavedQueries = JSON.parse(
+        localStorage.getItem("previousQueriesArray")!
+      );
+      locallySavedQueries.push(query);
+      localStorage.setItem(
+        "previousQueriesArray",
+        JSON.stringify(locallySavedQueries)
+      );
+      setPreviousQueries(locallySavedQueries);
     } else {
       delete queryToSet.q;
     }
@@ -34,11 +61,15 @@ const Navbar: React.FC = () => {
   return (
     <div className={styles.container}>
       <div className={styles.searchContainer}>
-        <Input.Search
+        <AutoComplete
           className={styles.searchInput}
-          placeholder="Qué quieres saber?"
-          onSearch={(value) => setQuery(value)}
-        />
+          options={previousQueries.map((q) => ({ value: q }))}
+        >
+          <Input.Search
+            placeholder="Qué quieres saber?"
+            onSearch={(value) => setQuery(value)}
+          />
+        </AutoComplete>
       </div>
       <Dropdown
         trigger={["click"]}
