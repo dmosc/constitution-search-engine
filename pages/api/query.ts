@@ -33,6 +33,25 @@ export default async function handler(
     const user = await User.findOne({ email: session?.user.email });
     filters._id = { $in: user?.starredArticles };
   }
-  const articles = await Article.find(filters).limit(20);
+  const articles = await Article.aggregate([
+    { $match: filters },
+    {
+      $addFields: {
+        tfidf: {
+          $reduce: {
+            input: { $objectToArray: "$$ROOT.weights" },
+            initialValue: 0,
+            in: {
+              $add: [
+                "$$value",
+                { $cond: [{ $in: ["$$this.k", "$keywords"] }, "$$this.v", 0] }
+              ]
+            }
+          }
+        }
+      }
+    },
+    { $sort: { tfidf: -1 } }
+  ]);
   res.status(200).json({ articles, matchedWords });
 }
