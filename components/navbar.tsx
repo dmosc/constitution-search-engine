@@ -63,7 +63,7 @@ const Navbar: React.FC = () => {
       <div className={styles.searchContainer}>
         <AutoComplete
           className={styles.searchInput}
-          options={previousQueries.map((q) => ({ value: q }))}
+          options={previousQueries.map((q, idx) => ({ value: q, key: idx }))}
         >
           <Input.Search
             placeholder="Qué quieres saber?"
