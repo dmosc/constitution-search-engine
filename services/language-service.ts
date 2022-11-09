@@ -1,7 +1,8 @@
 import { LanguageServiceClient } from "@google-cloud/language";
 
-const SPANISH_SYNONYMS_ENDPOINT =
-  "http://sesat.fdi.ucm.es:8080/servicios/rest/sinonimos/json";
+const SPANISH_SYNONYMS_ENDPOINT = new URL(
+  `https://thesaurus.altervista.org/thesaurus/v1?key=${process.env.THESAURUS_API_KEY}&language=es_ES&output=json`
+);
 const authPayload = {
   projectId: process.env.GOOGLE_APPLICATION_CREDENTIALS_PROJECT_ID!,
   credentials: {
@@ -56,10 +57,16 @@ class LanguageService {
   }
 
   async getSynonyms(word: string) {
-    const response = await fetch(`${SPANISH_SYNONYMS_ENDPOINT}/${word}`);
-    const { sinonimos: synonyms }: { sinonimos: { sinonimo: string }[] } =
-      await response.json();
-    return Array.isArray(synonyms) ? synonyms?.map((s) => s.sinonimo) : [];
+    SPANISH_SYNONYMS_ENDPOINT.searchParams.append("word", word);
+    const payload = await fetch(SPANISH_SYNONYMS_ENDPOINT.href);
+    const { response } = await payload.json();
+    let synonyms: string[] = [];
+    for (const {
+      list: { synonyms: synonymsAsString }
+    } of response) {
+      synonyms = [...synonyms, ...synonymsAsString.split("|")];
+    }
+    return synonyms ?? [];
   }
 }
 
