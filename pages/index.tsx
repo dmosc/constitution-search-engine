@@ -1,8 +1,13 @@
-import { LoadingOutlined, StarFilled, StarOutlined } from "@ant-design/icons";
-import { Button, Card } from "antd";
+import {
+  ArrowsAltOutlined,
+  LoadingOutlined,
+  ShareAltOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Row, Col, message } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { ArticleType, UserType } from "types/models";
@@ -13,7 +18,6 @@ let timeoutId: number;
 
 const Home: NextPage = () => {
   const router = useRouter();
-  const { data: session } = useSession();
   const [articles, setArticles] = useState<ArticleType[]>([]);
   const [matchedWords, setMatchedWords] = useState<string[]>();
   const [starredArticles, setStarredArticles] = useState<Set<Types.ObjectId>>();
@@ -81,35 +85,59 @@ const Home: NextPage = () => {
             // TODO: Replace scroll overflow for a modal.
             style={{ maxHeight: "25vh", overflow: "auto" }}
             extra={
-              <Button
-                type="dashed"
-                disabled={!!isSaving}
-                icon={iconToRender}
-                onClick={() => {
-                  setIsSaving(article._id);
-                  const starredArticlesToSet = new Set(starredArticles);
-                  if (starredArticlesToSet?.has(article._id)) {
-                    starredArticlesToSet.delete(article._id);
-                  } else {
-                    starredArticlesToSet?.add(article._id);
-                  }
-                  fetch("/api/user.update", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      starredArticles: [...starredArticlesToSet!]
-                    })
-                  })
-                    .then((res) => res.json())
-                    .then((res: UserType) => {
-                      setStarredArticles(
-                        new Set(res.starredArticles.map(({ _id }) => _id))
+              <Row gutter={[5, 0]}>
+                <Col span={8}>
+                  <Button
+                    type="primary"
+                    icon={<ArrowsAltOutlined />}
+                    onClick={() => {
+                      router.push(`/articles/${article._id}`);
+                    }}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Button
+                    icon={<ShareAltOutlined />}
+                    onClick={() => {
+                      navigator.clipboard.writeText(
+                        `${window.location.host}/articles/${article._id}`
                       );
-                    })
-                    .finally(() => {
-                      setIsSaving(undefined);
-                    });
-                }}
-              />
+                      message.info("¡Link copiado al portapapeles!");
+                    }}
+                  />
+                </Col>
+                <Col span={8}>
+                  <Button
+                    type="dashed"
+                    disabled={!!isSaving}
+                    icon={iconToRender}
+                    onClick={() => {
+                      setIsSaving(article._id);
+                      const starredArticlesToSet = new Set(starredArticles);
+                      if (starredArticlesToSet?.has(article._id)) {
+                        starredArticlesToSet.delete(article._id);
+                      } else {
+                        starredArticlesToSet?.add(article._id);
+                      }
+                      fetch("/api/user.update", {
+                        method: "POST",
+                        body: JSON.stringify({
+                          starredArticles: [...starredArticlesToSet!],
+                        }),
+                      })
+                        .then((res) => res.json())
+                        .then((res: UserType) => {
+                          setStarredArticles(
+                            new Set(res.starredArticles.map(({ _id }) => _id))
+                          );
+                        })
+                        .finally(() => {
+                          setIsSaving(undefined);
+                        });
+                    }}
+                  />
+                </Col>
+              </Row>
             }
           >
             <div id={String(article.codeName)}>{article.content}</div>

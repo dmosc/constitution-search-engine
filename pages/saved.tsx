@@ -1,5 +1,10 @@
-import { StarFilled, StarOutlined } from "@ant-design/icons";
-import { Button, Card } from "antd";
+import {
+  StarFilled,
+  StarOutlined,
+  ArrowsAltOutlined,
+  ShareAltOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Row, Col, message } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -71,36 +76,60 @@ const Saved: NextPage = () => {
           // TODO: Replace scroll overflow for a modal.
           style={{ maxHeight: "25vh", overflow: "auto" }}
           extra={
-            <Button
-              type="dashed"
-              icon={
-                starredArticles?.has(article._id) ? (
-                  <StarFilled />
-                ) : (
-                  <StarOutlined />
-                )
-              }
-              onClick={() => {
-                const starredArticlesToSet = new Set(starredArticles);
-                if (starredArticlesToSet?.has(article._id)) {
-                  starredArticlesToSet.delete(article._id);
-                } else {
-                  starredArticlesToSet?.add(article._id);
-                }
-                fetch("/api/user.update", {
-                  method: "POST",
-                  body: JSON.stringify({
-                    starredArticles: [...starredArticlesToSet!]
-                  })
-                })
-                  .then((res) => res.json())
-                  .then((res: UserType) => {
-                    setStarredArticles(
-                      new Set(res.starredArticles.map(({ _id }) => _id))
+            <Row gutter={[5, 0]}>
+              <Col span={8}>
+                <Button
+                  type="primary"
+                  icon={<ArrowsAltOutlined />}
+                  onClick={() => {
+                    router.push(`/articles/${article._id}`);
+                  }}
+                />
+              </Col>
+              <Col span={8}>
+                <Button
+                  icon={<ShareAltOutlined />}
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      `${window.location.host}/articles/${article._id}`
                     );
-                  });
-              }}
-            />
+                    message.info("¡Link copiado al portapapeles!");
+                  }}
+                />
+              </Col>
+              <Col span={8}>
+                <Button
+                  type="dashed"
+                  icon={
+                    starredArticles?.has(article._id) ? (
+                      <StarFilled />
+                    ) : (
+                      <StarOutlined />
+                    )
+                  }
+                  onClick={() => {
+                    const starredArticlesToSet = new Set(starredArticles);
+                    if (starredArticlesToSet?.has(article._id)) {
+                      starredArticlesToSet.delete(article._id);
+                    } else {
+                      starredArticlesToSet?.add(article._id);
+                    }
+                    fetch("/api/user.update", {
+                      method: "POST",
+                      body: JSON.stringify({
+                        starredArticles: [...starredArticlesToSet!],
+                      }),
+                    })
+                      .then((res) => res.json())
+                      .then((res: UserType) => {
+                        setStarredArticles(
+                          new Set(res.starredArticles.map(({ _id }) => _id))
+                        );
+                      });
+                  }}
+                />
+              </Col>
+            </Row>
           }
         >
           <div id={String(article.codeName)}>{article.content}</div>
