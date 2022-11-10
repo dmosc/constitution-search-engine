@@ -1,5 +1,11 @@
-import {ArrowsAltOutlined, LoadingOutlined, ShareAltOutlined, StarFilled, StarOutlined} from "@ant-design/icons";
-import {Button, Card, Row, Col, message} from "antd";
+import {
+  ArrowsAltOutlined,
+  LoadingOutlined,
+  ShareAltOutlined,
+  StarFilled,
+  StarOutlined,
+} from "@ant-design/icons";
+import { Button, Card, Row, Col, message } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -79,11 +85,11 @@ const Home: NextPage = () => {
             // TODO: Replace scroll overflow for a modal.
             style={{ maxHeight: "25vh", overflow: "auto" }}
             extra={
-              <Row gutter={[5,0]}>
+              <Row gutter={[5, 0]}>
                 <Col span={8}>
                   <Button
                     type="primary"
-                    icon={<ArrowsAltOutlined/>}
+                    icon={<ArrowsAltOutlined />}
                     onClick={() => {
                       router.push(`/articles/${article._id}`);
                     }}
@@ -93,8 +99,10 @@ const Home: NextPage = () => {
                   <Button
                     icon={<ShareAltOutlined />}
                     onClick={() => {
-                      navigator.clipboard.writeText(`${window.location.host}/articles/${article._id}`);
-                      message.info('¡Link copiado al portapapeles!');
+                      navigator.clipboard.writeText(
+                        `${window.location.host}/articles/${article._id}`
+                      );
+                      message.info("¡Link copiado al portapapeles!");
                     }}
                   />
                 </Col>
@@ -114,8 +122,8 @@ const Home: NextPage = () => {
                       fetch("/api/user.update", {
                         method: "POST",
                         body: JSON.stringify({
-                          starredArticles: [...starredArticlesToSet!]
-                        })
+                          starredArticles: [...starredArticlesToSet!],
+                        }),
                       })
                         .then((res) => res.json())
                         .then((res: UserType) => {

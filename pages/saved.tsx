@@ -1,4 +1,9 @@
-import { StarFilled, StarOutlined, ArrowsAltOutlined, ShareAltOutlined } from "@ant-design/icons";
+import {
+  StarFilled,
+  StarOutlined,
+  ArrowsAltOutlined,
+  ShareAltOutlined,
+} from "@ant-design/icons";
 import { Button, Card, Row, Col, message } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
@@ -58,7 +63,7 @@ const Saved: NextPage = () => {
     fetch("/api/user.get")
       .then((res) => res.json())
       .then((res: UserType) => {
-        setStarredArticles(new Set(res.starredArticles.map(({_id}) => _id)));
+        setStarredArticles(new Set(res.starredArticles.map(({ _id }) => _id)));
       });
   }, []);
 
@@ -69,13 +74,13 @@ const Saved: NextPage = () => {
           title={article.name}
           key={String(article.codeName)}
           // TODO: Replace scroll overflow for a modal.
-          style={{maxHeight: "25vh", overflow: "auto"}}
+          style={{ maxHeight: "25vh", overflow: "auto" }}
           extra={
-            <Row gutter={[5,0]}>
+            <Row gutter={[5, 0]}>
               <Col span={8}>
                 <Button
                   type="primary"
-                  icon={<ArrowsAltOutlined/>}
+                  icon={<ArrowsAltOutlined />}
                   onClick={() => {
                     router.push(`/articles/${article._id}`);
                   }}
@@ -85,8 +90,10 @@ const Saved: NextPage = () => {
                 <Button
                   icon={<ShareAltOutlined />}
                   onClick={() => {
-                    navigator.clipboard.writeText(`${window.location.host}/articles/${article._id}`);
-                    message.info('¡Link copiado al portapapeles!');
+                    navigator.clipboard.writeText(
+                      `${window.location.host}/articles/${article._id}`
+                    );
+                    message.info("¡Link copiado al portapapeles!");
                   }}
                 />
               </Col>
@@ -95,9 +102,9 @@ const Saved: NextPage = () => {
                   type="dashed"
                   icon={
                     starredArticles?.has(article._id) ? (
-                      <StarFilled/>
+                      <StarFilled />
                     ) : (
-                      <StarOutlined/>
+                      <StarOutlined />
                     )
                   }
                   onClick={() => {
@@ -110,13 +117,13 @@ const Saved: NextPage = () => {
                     fetch("/api/user.update", {
                       method: "POST",
                       body: JSON.stringify({
-                        starredArticles: [...starredArticlesToSet!]
-                      })
+                        starredArticles: [...starredArticlesToSet!],
+                      }),
                     })
                       .then((res) => res.json())
                       .then((res: UserType) => {
                         setStarredArticles(
-                          new Set(res.starredArticles.map(({_id}) => _id))
+                          new Set(res.starredArticles.map(({ _id }) => _id))
                         );
                       });
                   }}
