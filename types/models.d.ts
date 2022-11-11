@@ -7,6 +7,7 @@ type ArticleType = {
   content: string;
   weights: Map<string, number>;
   keywords: string[];
+  views: number;
 };
 
 type UserType = {

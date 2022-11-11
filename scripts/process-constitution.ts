@@ -35,6 +35,7 @@ type BlobContentType =
           name?: string;
           keywords?: string[];
           weights?: { [key: string]: number };
+          views?: number;
           _wordFrequencies?: Map<string, number>;
         } = {
           codeName: file.name.split(".")[0]
@@ -61,6 +62,7 @@ type BlobContentType =
           globalWordFrequencies.set(key, prevGlobalCount + 1);
         });
         article._wordFrequencies = wordFrequencies;
+        article.views = 0;
         articles.push(article);
       }
     }

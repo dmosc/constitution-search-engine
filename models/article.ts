@@ -6,7 +6,8 @@ const Article = new Schema<ArticleType>({
   name: { type: String, required: true },
   content: { type: String, required: true },
   weights: { type: Map, of: Number, required: true },
-  keywords: [{ type: String, required: true }]
+  keywords: [{ type: String, required: true }],
+  views: { type: Number, required: true },
 });
 
 export default model<ArticleType>("Article", Article, undefined, {

@@ -5,7 +5,7 @@ import {
   StarFilled,
   StarOutlined,
 } from "@ant-design/icons";
-import { Button, Card, Row, Col, message } from "antd";
+import { Button, Card, Row, Col, message, Tooltip, Badge } from "antd";
 import { Types } from "mongoose";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -78,6 +78,7 @@ const Home: NextPage = () => {
             iconToRender = <StarOutlined />;
           }
         }
+        const n = article.views;
         return (
           <Card
             title={article.name}
@@ -86,7 +87,12 @@ const Home: NextPage = () => {
             style={{ maxHeight: "25vh", overflow: "auto" }}
             extra={
               <Row gutter={[5, 0]}>
-                <Col span={8}>
+                <Col span={6}>
+                  <Tooltip title={`${article.views} búsquedas recientes`}>
+                    <Badge count={`${article.views}`} />
+                  </Tooltip>
+                </Col>
+                <Col span={6}>
                   <Button
                     type="primary"
                     icon={<ArrowsAltOutlined />}
@@ -95,7 +101,7 @@ const Home: NextPage = () => {
                     }}
                   />
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                   <Button
                     icon={<ShareAltOutlined />}
                     onClick={() => {
@@ -106,7 +112,7 @@ const Home: NextPage = () => {
                     }}
                   />
                 </Col>
-                <Col span={8}>
+                <Col span={6}>
                   <Button
                     type="dashed"
                     disabled={!!isSaving}
