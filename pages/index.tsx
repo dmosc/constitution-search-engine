@@ -3,7 +3,7 @@ import {
   LoadingOutlined,
   ShareAltOutlined,
   StarFilled,
-  StarOutlined,
+  StarOutlined
 } from "@ant-design/icons";
 import { Button, Card, Row, Col, message } from "antd";
 import { Types } from "mongoose";
@@ -49,7 +49,7 @@ const Home: NextPage = () => {
       for (const matchWord of matchedWords ?? []) {
         formattedContent = formattedContent.replace(
           matchWord,
-          `<mark>${matchWord}</mark>`
+          `<span style="background-color: yellow; color: black">${matchWord}</span>`
         );
       }
       content!.innerHTML = formattedContent;
@@ -122,8 +122,8 @@ const Home: NextPage = () => {
                       fetch("/api/user.update", {
                         method: "POST",
                         body: JSON.stringify({
-                          starredArticles: [...starredArticlesToSet!],
-                        }),
+                          starredArticles: [...starredArticlesToSet!]
+                        })
                       })
                         .then((res) => res.json())
                         .then((res: UserType) => {

@@ -46,11 +46,14 @@ const Navbar: React.FC = () => {
         localStorage.getItem("previousQueriesArray")!
       );
       locallySavedQueries.push(query);
+      const last5Queries = locallySavedQueries.slice(
+        Math.max(locallySavedQueries.length - 5, 0)
+      );
       localStorage.setItem(
         "previousQueriesArray",
-        JSON.stringify(locallySavedQueries)
+        JSON.stringify(last5Queries)
       );
-      setPreviousQueries(locallySavedQueries);
+      setPreviousQueries(last5Queries);
     } else {
       delete queryToSet.q;
     }
@@ -68,6 +71,7 @@ const Navbar: React.FC = () => {
           <Input.Search
             placeholder="Qué quieres saber?"
             onSearch={(value) => setQuery(value)}
+            allowClear
           />
         </AutoComplete>
       </div>

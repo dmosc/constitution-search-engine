@@ -25,6 +25,9 @@ export default async function handler(
     ...keywords.map((k) => k.lemma!),
     ...synonyms.map((s) => s)
   ];
+  if (!!q) {
+    matchedWords.push(...q.split(" "));
+  }
   if (matchedWords.length) {
     filters.keywords = { $elemMatch: { $in: matchedWords } };
   }

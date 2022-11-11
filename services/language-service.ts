@@ -63,7 +63,7 @@ class LanguageService {
     let synonyms: string[] = [];
     for (const {
       list: { synonyms: synonymsAsString }
-    } of response) {
+    } of response ?? []) {
       synonyms = [...synonyms, ...synonymsAsString.split("|")];
     }
     return synonyms ?? [];

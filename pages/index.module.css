@@ -4,3 +4,8 @@
   gap: 20px 15px;
   padding: var(--default-padding);
 }
+
+.highlightColor {
+  background-color: yellow;
+  color: black;
+}
