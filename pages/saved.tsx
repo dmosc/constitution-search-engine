@@ -79,15 +79,15 @@ const Saved: NextPage = () => {
             style={{ maxHeight: "25vh", overflow: "auto" }}
             extra={
               <Row gutter={[5, 0]}>
-                {displayViews ? (
+                {displayViews && (
                   <Col span={6}>
                     <Tooltip title={`${article.views} búsquedas recientes`}>
                       <Badge
-                        count={article.views > 0 ? `${article.views}` : "0"}
+                        count={article.views}
                       />
                     </Tooltip>
                   </Col>
-                ) : null}
+                )}
                 <Col span={displayViews ? 6 : 8}>
                   <Button
                     type="primary"

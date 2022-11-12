@@ -51,7 +51,7 @@ export default async function handler(
         }
       }
     },
-    { $sort: { tfidf: -1 } }
+    { $sort: { tfidf: -1, views: -1 } }
   ]);
   res.status(200).json({ articles, matchedWords });
 }

@@ -38,7 +38,8 @@ const ArticleDisplay: NextPage = () => {
       });
   }, []);
 
-  return article !== undefined ? (
+  if (!article) return <Skeleton />;
+  return (
     <div className={styles.container}>
       <Card
         title={article.name}
@@ -47,13 +48,13 @@ const ArticleDisplay: NextPage = () => {
         style={{ maxHeight: "100vh", overflow: "auto" }}
         extra={
           <Row gutter={[5, 0]}>
-            {article.views > 0 ? (
-              <Col span={8}>
+            {article.views > 0 && (
+              <Col span={6}>
                 <Tooltip title={`${article.views} búsquedas recientes`}>
-                  <Badge count={article.views > 0 ? `${article.views}` : "0"} />
+                  <Badge count={article.views} />
                 </Tooltip>
               </Col>
-            ) : null}
+            )}
             <Col span={article.views > 0 ? 8 : 12}>
               <Button
                 icon={<ShareAltOutlined />}
@@ -106,8 +107,6 @@ const ArticleDisplay: NextPage = () => {
         <div id={String(article.codeName)}>{article.content}</div>
       </Card>
     </div>
-  ) : (
-    <Skeleton />
   );
 };
 
