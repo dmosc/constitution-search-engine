@@ -1,5 +1,14 @@
 import { StarFilled, StarOutlined, ShareAltOutlined } from "@ant-design/icons";
-import { Button, Card, Col, message, Row } from "antd";
+import {
+  Badge,
+  Button,
+  Card,
+  Col,
+  message,
+  Row,
+  Skeleton,
+  Tooltip,
+} from "antd";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
@@ -29,27 +38,35 @@ const ArticleDisplay: NextPage = () => {
       });
   }, []);
 
+  if (!article) return <Skeleton />;
   return (
     <div className={styles.container}>
       <Card
-        title={article?.name}
-        key={String(article?.codeName)}
+        title={article.name}
+        key={String(article.codeName)}
         // TODO: Replace scroll overflow for a modal.
         style={{ maxHeight: "100vh", overflow: "auto" }}
         extra={
           <Row gutter={[5, 0]}>
-            <Col span={12}>
+            {article.views > 0 && (
+              <Col span={6}>
+                <Tooltip title={`${article.views} búsquedas recientes`}>
+                  <Badge count={article.views} />
+                </Tooltip>
+              </Col>
+            )}
+            <Col span={article.views > 0 ? 8 : 12}>
               <Button
                 icon={<ShareAltOutlined />}
                 onClick={() => {
                   navigator.clipboard.writeText(
-                    `${window.location.host}/articles/${article?._id}`
+                    `${window.location.host}/articles/${article._id}`
                   );
                   message.info("¡Link copiado al portapapeles!");
                 }}
               />
             </Col>
-            <Col span={12}>
+            <Col span={article.views > 0 ? 8 : 12}>
               <Button
                 type="dashed"
                 icon={
@@ -87,7 +104,7 @@ const ArticleDisplay: NextPage = () => {
           </Row>
         }
       >
-        <div id={String(article?.codeName)}>{article?.content}</div>
+        <div id={String(article.codeName)}>{article.content}</div>
       </Card>
     </div>
   );
